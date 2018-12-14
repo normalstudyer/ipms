@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jsfztech.modules.ips.dao.MapInfoDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.jsfztech.modules.ips.entity.MapInfoEntity" id="mapInfoMap">
+        <result property="id" column="id"/>
+        <result property="catalogId" column="catalog_id"/>
+        <result property="mapName" column="map_name"/>
+        <result property="mapUrl" column="map_url"/>
+        <result property="originX" column="origin_x"/>
+        <result property="originY" column="origin_y"/>
+        <result property="aeraLength" column="aera_length"/>
+        <result property="aeraWidth" column="aera_width"/>
+        <result property="imageHeight" column="image_height"/>
+        <result property="imageWidth" column="image_width"/>
+        <result property="zoomMax" column="zoom_max"/>
+        <result property="zoomMin" column="zoom_min"/>
+        <result property="isdel" column="isdel"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.jsfztech.modules.ips.entity.MapInfoEntity">
+		select * from ips_map_info where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.jsfztech.modules.ips.entity.MapInfoEntity">
+		select * from ips_map_info i where 1=1
+		<!--<where>
+		<if test="id != null">-->
+			<if test="id != null and id != 0">and  i.catalog_id  in  ( SELECT  id   from ips_map_catalog  WHERE  (id= #{id} or pid= #{id})) </if>
+        <!--</if>
+		</where>-->
+		<if test="mapName != null and mapName.trim() != ''">
+			and i.`map_name` like concat('%',#{mapName},'%')
+		</if>
+
+		<choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by catalog_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from ips_map_info 
+	</select>
+	 
+	<insert id="save" parameterType="com.jsfztech.modules.ips.entity.MapInfoEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into ips_map_info
+		(
+			`catalog_id`, 
+			`map_name`, 
+			`map_url`, 
+			`origin_x`, 
+			`origin_y`, 
+			`aera_length`, 
+			`aera_width`, 
+			`image_height`, 
+			`image_width`, 
+			`zoom_max`,
+			`zoom_min`, 
+			`isdel`,
+            `map_memo`
+		)
+		values
+		(
+			#{catalogId}, 
+			#{mapName}, 
+			#{mapUrl}, 
+			#{originX}, 
+			#{originY}, 
+			#{aeraLength}, 
+			#{aeraWidth}, 
+			#{imageHeight}, 
+			#{imageWidth}, 
+			#{zoomMax}, 
+			#{zoomMin}, 
+			#{isdel},
+			#{mapMemo}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.jsfztech.modules.ips.entity.MapInfoEntity">
+		update ips_map_info 
+		<set>
+			<if test="catalogId != null">`catalog_id` = #{catalogId}, </if>
+			<if test="mapName != null">`map_name` = #{mapName}, </if>
+			<if test="mapUrl != null">`map_url` = #{mapUrl}, </if>
+			<if test="originX != null">`origin_x` = #{originX}, </if>
+			<if test="originY != null">`origin_y` = #{originY}, </if>
+			<if test="aeraLength != null">`aera_length` = #{aeraLength}, </if>
+			<if test="aeraWidth != null">`aera_width` = #{aeraWidth}, </if>
+			<if test="imageHeight != null">`image_height` = #{imageHeight}, </if>
+			<if test="imageWidth != null">`image_width` = #{imageWidth}, </if>
+			<if test="zoomMax != null">`zoom_max` = #{zoomMax}, </if>
+			<if test="zoomMin != null">`zoom_min` = #{zoomMin}, </if>
+			<if test="isdel != null">`isdel` = #{isdel}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from ips_map_info where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from ips_map_info where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

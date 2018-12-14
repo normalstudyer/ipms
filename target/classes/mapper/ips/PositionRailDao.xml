@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jsfztech.modules.ips.dao.PositionRailDao">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.jsfztech.modules.ips.entity.PositionRailEntity" id="positionRailMap">
+        <result property="id" column="id"/>
+        <result property="railId" column="rail_id"/>
+        <result property="railName" column="rail_name"/>
+        <result property="railRemarks" column="rail_remarks"/>
+    </resultMap>
+
+    <select id="queryObject" resultType="com.jsfztech.modules.ips.entity.PositionRailEntity">
+		select * from ips_position_rail where id = #{value}
+	</select>
+
+    <select id="queryList" resultType="com.jsfztech.modules.ips.entity.PositionRailEntity">
+        select * from ips_position_rail i where 1=1
+            <if test="railName != null and railName.trim() != ''">
+                and i.`rail_name` like concat('%',#{railName},'%')
+
+            </if>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int">
+		select count(*) from ips_position_rail 
+	</select>
+
+    <insert id="save" parameterType="com.jsfztech.modules.ips.entity.PositionRailEntity">
+		insert into ips_position_rail
+		(
+			`id`, 
+			`rail_id`, 
+			`rail_name`, 
+			`rail_remarks`
+		)
+		values
+		(
+			#{id}, 
+			#{railId}, 
+			#{railName}, 
+			#{railRemarks}
+		)
+	</insert>
+
+    <update id="update" parameterType="com.jsfztech.modules.ips.entity.PositionRailEntity">
+        update ips_position_rail
+        <set>
+            <if test="railId != null">`rail_id` = #{railId},</if>
+            <if test="railName != null">`rail_name` = #{railName},</if>
+            <if test="railRemarks != null">`rail_remarks` = #{railRemarks}</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete">
+		delete from ips_position_rail where id = #{value}
+	</delete>
+
+    <delete id="deleteBatch">
+        delete from ips_position_rail where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

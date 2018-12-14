@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jsfztech.modules.ips.dao.RailPersonRelDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.jsfztech.modules.ips.entity.RailPersonRelEntity" id="railPersonRelMap">
+        <result property="id" column="id"/>
+        <result property="railId" column="rail_id"/>
+        <result property="personId" column="person_id"/>
+        <result property="enter" column="enter"/>
+        <result property="leave" column="leave"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.jsfztech.modules.ips.entity.RailPersonRelEntity">
+		select * from ips_rail_person_rel where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.jsfztech.modules.ips.entity.RailPersonRelEntity">
+		select * from ips_rail_person_rel
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from ips_rail_person_rel 
+	</select>
+	 
+	<insert id="save" parameterType="com.jsfztech.modules.ips.entity.RailPersonRelEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into ips_rail_person_rel
+		(
+			`rail_id`, 
+			`person_id`, 
+			`enter`, 
+			`leave`
+		)
+		values
+		(
+			#{railId}, 
+			#{personId}, 
+			#{enter}, 
+			#{leave}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.jsfztech.modules.ips.entity.RailPersonRelEntity">
+		update ips_rail_person_rel 
+		<set>
+			<if test="railId != null">`rail_id` = #{railId}, </if>
+			<if test="personId != null">`person_id` = #{personId}, </if>
+			<if test="enter != null">`enter` = #{enter}, </if>
+			<if test="leave != null">`leave` = #{leave}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from ips_rail_person_rel where id = #{value}
+	</delete>
+	<delete id="deletePersionId">
+		delete from ips_rail_person_rel where person_id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from ips_rail_person_rel where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

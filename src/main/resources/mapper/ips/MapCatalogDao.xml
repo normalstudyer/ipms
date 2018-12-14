@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jsfztech.modules.ips.dao.MapCatalogDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.jsfztech.modules.ips.entity.MapCatalogEntity" id="mapCatalogMap">
+        <result property="id" column="id"/>
+        <result property="pid" column="pid"/>
+        <result property="catalogName" column="catalog_name"/>
+        <result property="catalogRemarks" column="catalog_remarks"/>
+        <result property="isdel" column="isdel"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.jsfztech.modules.ips.entity.MapCatalogEntity">
+		select * from ips_map_catalog where id = #{value}
+	</select>
+	<select id="queryParentObject" resultType="com.jsfztech.modules.ips.entity.MapCatalogEntity">
+		select * from ips_map_catalog where pid = #{value}
+	</select>
+	<select id="queryList" resultType="com.jsfztech.modules.ips.entity.MapCatalogEntity">
+		select d.*,d.catalog_name as name ,(select p.catalog_name from ips_map_catalog p where p.id = d.pid) as parentName
+		from ips_map_catalog d where d.isdel = 0
+		<!--  数据过滤  -->
+		${filterSql}
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by d.${sidx} ${order}
+            </when>
+			<otherwise>
+                order by d.order_num  asc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from ips_map_catalog 
+	</select>
+	 
+	<insert id="save" parameterType="com.jsfztech.modules.ips.entity.MapCatalogEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into ips_map_catalog
+		(
+			`pid`, 
+			`catalog_name`, 
+			`catalog_remarks`, 
+			`order_num`
+		)
+		values
+		(
+			#{pid}, 
+			#{catalogName}, 
+			#{catalogRemarks}, 
+			#{orderNum}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.jsfztech.modules.ips.entity.MapCatalogEntity">
+		update ips_map_catalog 
+		<set>
+			<if test="pid != null">`pid` = #{pid}, </if>
+			<if test="catalogName != null">`catalog_name` = #{catalogName}, </if>
+			<if test="catalogRemarks != null">`catalog_remarks` = #{catalogRemarks}, </if>
+			<if test="orderNum != null">`order_num` = #{orderNum}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		update ips_map_catalog set isdel = 1 where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from ips_map_catalog where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<select id="queryMapIdList" resultType="int">
+		select id from ips_map_catalog where pid = #{value}
+	</select>
+
+</mapper>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<title>室内定位信息表</title>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+		<link rel="stylesheet" href="../../css/bootstrap.min.css">
+		<link rel="stylesheet" href="../../css/font-awesome.min.css">
+		<link rel="stylesheet" href="../../plugins/popover/jquery.webui-popover.min.css" />
+		<link rel="stylesheet" href="../../plugins/ztree/css/metroStyle/metroStyle.css">
+		<!--<link rel="stylesheet" href="../../plugins/bootstrap-sllider/bootstrap-slider.css">-->
+		<link rel="stylesheet" href="../../css/main.css">
+		<link rel="stylesheet" href="../../css/positioninfo.css">
+		<script src="../../libs/jquery.min.js"></script>
+		<script src="../../plugins/layer/layer.js"></script>
+		<script type="text/javascript" src="../../plugins/popover/jquery.webui-popover.min.js"></script>
+		<script type="text/javascript" src="../../plugins/axis4Indoor/axis4Indoor-image.js"></script>
+		<script type="text/javascript" src="../../plugins/Tdrag/Tdrag.js"></script>
+		<!--<script type="text/javascript" src="../../plugins/bootstrap-sllider/bootstrap-slider.js"></script>-->
+		<script src="../../plugins/ztree/jquery.ztree.all.min.js"></script>
+		<script src="../../js/common.js"></script>
+	</head>
+	<script>
+	</script>
+
+	<body>
+		<div class="row">
+			<div class="col-sm-3 col-md-2"  style="border-right: 1px solid #ddd;height: 100%;padding-right: 5px;padding-left: 12px;">
+				<div class="treediv">
+					<div class="title">
+						<i class="fa fa-tags"></i><span> 标签列表</span>
+					</div>
+					<ul id="placeTree" class="ztree" style="overflow: auto;height: 100%;width: 100%"></ul>
+				</div>
+
+				<div class="rail_log_div">
+					<div class="title">
+						<i class="fa fa-exclamation-triangle"></i><span> 围栏告警</span>
+						<a href="javascript:;" class="pull-right" title="清空" id="clearlog"><i class="glyphicon glyphicon-trash"></i></a>
+					</div>
+					<ul>
+						<li class="nolog">暂无告警消息</li>
+						<!--<li><span class="log-time">2018/10/12 11:50:46</span>：<span>李四</span> <span class="rail-danger">进入</span> <span class="rail-name">危险区域1</span></li>-->
+
+					</ul>
+				</div>
+			</div>
+			<div class="col-sm-9 col-md-10" id="mapContainer">
+				<div id="axisContent">
+					<img id="map" src="../../images/indoorImage.jpg" width="100%" height="auto" border="0" />
+				</div>
+			</div>
+		</div>
+		<script src="../../js/modules/ips/positioninfo.js"></script>
+	</body>
+
+</html>

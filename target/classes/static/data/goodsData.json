@@ -1,0 +1,54 @@
+{
+	"goods_num": 0,
+	"page": {
+		"totalCount": 6,
+		"pageSize": 6,
+		"totalPage": 1,
+		"currPage": 1,
+		"list": [
+			{
+				"id": 1,
+				"goodsNum": "cl001",
+				"name":"钢材",
+				"brand": "宝武",
+				"model": "φ30",
+				"unit": "吨"
+			},{
+				"id": 2,
+				"goodsNum": "cl002",
+				"name":"水泥",
+				"brand": "康辉耐材",
+				"model": "P.S 52.5R",
+				"unit": "吨"
+			},{
+				"id": 3,
+				"goodsNum": "cl003",
+				"name":"防盗门",
+				"brand": "美心",
+				"model": "R52",
+				"unit": "扇"
+			},{
+				"id": 4,
+				"goodsNum": "cl010",
+				"name":"石子",
+				"brand": "汇鑫",
+				"model": "1-2cm",
+				"unit": "m³"
+			},{
+				"id": 5,
+				"goodsNum": "cl011",
+				"name":"水管",
+				"brand": "联塑",
+				"model": "20-160",
+				"unit": "米"
+			},{
+				"id": 6,
+				"goodsNum": "cl012",
+				"name":"木板",
+				"brand": "三颗树",
+				"model": "202*120",
+				"unit": "块"
+			}
+		]
+	}
+}

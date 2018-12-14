@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jsfztech.modules.ips.dao.RailWarnningDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.jsfztech.modules.ips.entity.RailWarnningEntity" id="railWarnningMap">
+        <result property="id" column="id"/>
+        <result property="railId" column="rail_id"/>
+        <result property="labelId" column="label_id"/>
+        <result property="triggerDate" column="trigger_date"/>
+        <result property="triggerType" column="trigger_type"/>
+        <result property="info" column="info"/>
+    </resultMap>
+	<resultMap type="java.util.Map" id="railWarnningMap1">
+		<result property="id" column="id"/>
+		<result property="railName" column="rail_name"/>
+		<result property="name" column="name"/>
+		<result property="triggerDate" column="trigger_date"/>
+		<result property="triggerType" column="trigger_type"/>
+		<result property="info" column="info"/>
+	</resultMap>
+	<resultMap type="java.util.Map" id="railWarnningEcharts">
+		<result property="railName" column="rail_name"/>
+		<result property="inNumbers" column="in_numbers"/>
+		<result property="outNumbers" column="out_numbers"/>
+	</resultMap>
+
+	<select id="queryObject" resultType="com.jsfztech.modules.ips.entity.RailWarnningEntity">
+		select * from ips_rail_warnning where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.jsfztech.modules.ips.entity.RailWarnningEntity">
+		select * from ips_rail_warnning irw
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryList1" resultMap="railWarnningMap1">
+		select * from (
+		select irw.*, ipr.rail_name ,ip.name from ips_rail_warnning irw
+		LEFT JOIN ips_position_rail ipr ON irw.rail_id = ipr.rail_id
+		LEFT JOIN ips_persons ip ON irw.label_id = ip.label_id) i where 1=1
+		<if test="timestart != null and timestart.trim() != ''">
+			and i.`trigger_date` &gt;= str_to_date(#{timestart},"%Y-%m-%d %H:%i:%s")
+		</if>
+		<if test="timeend != null and timeend.trim() != ''">
+			and i.`trigger_date` &lt;  str_to_date(#{timeend},"%Y-%m-%d %H:%i:%s")
+		</if>
+		<if test="railname != null and railname.trim() != ''">
+			and i.`rail_name` like concat('%',#{railname},'%')
+		</if>
+		<if test="name != null and name.trim() != ''">
+			and i.`name` like concat('%',#{name},'%')
+		</if>
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryExportList" resultMap="railWarnningMap1">
+		select * from (
+		select irw.id, ipr.rail_name ,ip.name,irw.trigger_date,irw.trigger_type,irw.info from ips_rail_warnning irw
+		LEFT JOIN ips_position_rail ipr ON irw.rail_id = ipr.rail_id
+		LEFT JOIN ips_persons ip ON irw.label_id = ip.label_id) i where 1=1
+		<if test="timestart != null and timestart.trim() != ''">
+			and i.`trigger_date` &gt;= str_to_date(#{timestart},"%Y-%m-%d %H:%i:%s")
+		</if>
+		<if test="timeend != null and timeend.trim() != ''">
+			and i.`trigger_date` &lt;  str_to_date(#{timeend},"%Y-%m-%d %H:%i:%s")
+		</if>
+		<if test="railname != null and railname != 'null' and railname.trim() != '' ">
+			and i.rail_name like concat('%',#{railname},'%')
+		</if>
+		<if test="name != null and name != 'null' and name.trim() != '' ">
+			and i.name like concat('%',#{name},'%')
+		</if>
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by i.id desc
+			</otherwise>
+		</choose>
+
+	</select>
+
+	<select id="queryEcharts" resultMap="railWarnningEcharts">
+		select a.rail_name,a.in_numbers,b.out_numbers from(
+        select DISTINCT i.rail_name,count(1) as in_numbers from (
+        SELECT
+			ipr.rail_name,irw.trigger_type
+
+		FROM
+			ips_rail_warnning irw
+		LEFT JOIN ips_position_rail ipr ON irw.rail_id = ipr.rail_id
+		LEFT JOIN ips_persons ip ON irw.label_id = ip.label_id)i where i.trigger_type = 1 GROUP BY i.rail_name) a
+        LEFT JOIN (
+        select DISTINCT i.rail_name,count(1) as out_numbers from (
+        SELECT
+			ipr.rail_name,irw.trigger_type
+
+		FROM
+			ips_rail_warnning irw
+		LEFT JOIN ips_position_rail ipr ON irw.rail_id = ipr.rail_id
+		LEFT JOIN ips_persons ip ON irw.label_id = ip.label_id)i where i.trigger_type = 2 GROUP BY i.rail_name) b
+        on a.rail_name = b.rail_name
+	</select>
+
+ 	<select id="queryTotal" resultType="int">
+		select count(1) from (
+		select irw.*, ipr.rail_name ,ip.name from ips_rail_warnning irw
+		LEFT JOIN ips_position_rail ipr ON irw.rail_id = ipr.rail_id
+		LEFT JOIN ips_persons ip ON irw.label_id = ip.label_id) i where 1=1
+		<if test="timestart != null and timestart.trim() != ''">
+			and i.`trigger_date` &gt;= str_to_date(#{timestart},"%Y-%m-%d %H:%i:%s")
+		</if>
+		<if test="timeend != null and timeend.trim() != ''">
+			and i.`trigger_date` &lt;  str_to_date(#{timeend},"%Y-%m-%d %H:%i:%s")
+		</if>
+		<if test="railname != null and railname.trim() != ''">
+			and i.`rail_name` like concat('%',#{railname},'%')
+		</if>
+		<if test="name != null and name.trim() != ''">
+			and i.`name` like concat('%',#{name},'%')
+		</if>
+	</select>
+	 
+	<insert id="save" parameterType="com.jsfztech.modules.ips.entity.RailWarnningEntity" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO ips_rail_warnning
+		(
+			`rail_id`,
+			`label_id`,
+			`trigger_type`,
+			`info`
+		)
+		SELECT #{railId},#{labelId},#{triggerType}, CONCAT(`name`," ",IF(#{triggerType}=1,"进入","离开")," ",
+		(SELECT rail_name FROM ips_position_rail WHERE rail_id=#{railId} limit 1)) AS info FROM ips_persons WHERE label_id=#{labelId} and isdel=0 limit 1
+	</insert>
+	 
+	<update id="update" parameterType="com.jsfztech.modules.ips.entity.RailWarnningEntity">
+		update ips_rail_warnning 
+		<set>
+			<if test="railId != null">`rail_id` = #{railId}, </if>
+			<if test="labelId != null">`label_id` = #{labelId}, </if>
+			<if test="triggerDate != null">`trigger_date` = #{triggerDate}, </if>
+			<if test="triggerType != null">`trigger_type` = #{triggerType}, </if>
+			<if test="info != null">`info` = #{info}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from ips_rail_warnning where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from ips_rail_warnning where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

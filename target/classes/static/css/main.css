@@ -1,0 +1,222 @@
+html {
+	overflow-x: hidden;
+}
+
+label i{
+	color: red;
+}
+
+.content-header {
+	position: relative;
+	padding: 0 0 3px 8px
+}
+
+.content-header>.breadcrumb {
+	position: relative;
+	top: 0;
+	right: 0;
+	float: none;
+	margin-top: 0px;
+	padding-left: 10px;
+	background: #ecf0f5;
+}
+
+.main-footer {
+	padding: 7px;
+	color: #444;
+	border-top: 1px solid #eee;
+}
+
+[v-cloak] {
+	display: none;
+}
+
+.grid-btn {
+	margin-bottom: 12px;
+}
+
+.grid-btn .btn {
+	margin-right: 10px;
+}
+
+.pointer {
+	cursor: pointer;
+}
+
+.ml-10 {
+	margin-left: 0 !important;
+}
+
+@media (min-width: 768px) {
+	.ml-10 {
+		margin-left: 10px !important;
+	}
+	.col-sm-10 {
+		width: 70%;
+		padding-left: 0px;
+	}
+	.col-sm-2 {
+		width: 24%;
+	}
+}
+
+tbody>tr>th {
+	font-weight: normal;
+}
+
+.panel .table {
+	margin: 0 0;
+}
+
+.panel .pagination {
+	margin: 0;
+}
+
+.panel-default>.panel-heading {
+	background-color: #f5f5f5;
+}
+
+.row {
+	/*border-top: 1px solid #ddd;*/
+	/*margin: 0;*/
+	/*padding: 20px 2px 0px 2px;*/
+}
+
+.col-xs-6 {
+	padding-left: 0px;
+	padding-right: 0px;
+}
+
+.form-horizontal .form-group {
+	margin-left: 0px;
+	margin-right: 0px;
+}
+
+.form-horizontal {
+	width: 550px;
+	padding-top: 20px;
+}
+
+.search-blocks {
+	border-bottom: 1px solid #eee;
+	padding-bottom: 10px;
+}
+
+.search-blocks .form-group {
+	padding: 0 10px !important;
+}
+
+.button-blocks {
+	margin-top: 12px;
+}
+.span-danger{
+	color: red;
+}
+
+.span-normal{
+	color: #5cb85c;
+}
+
+/*map*/
+#mapContainer {
+	height: 100%;
+	position: relative;
+	padding: 0px;
+	overflow: hidden;
+	border: none;
+}
+
+#axisContent {
+	margin: 0 auto;
+	display: block;
+	height: 100%;
+	width: 100%;
+	pointer-events: auto;
+	visibility: visible;
+	position: absolute;
+	cursor: url("../images/hand-paper.ico"),default;
+	border: 1px solid #ddd;
+}
+
+#axisContent img{
+	position: relative;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	z-index: 0;
+}
+
+#axisContent table {
+	height: 100%;
+	width: 100%;
+	border: 1px solid #ddd;
+	padding: 0;
+	margin: 0;
+	border-collapse: collapse;
+	z-index: 1;
+	table-layout:fixed;
+	word-break: break-all;
+	word-wrap: break-word;
+}
+
+#axisContent td{
+	border: 1px solid #999;
+	word-break: keep-all;
+	white-space:nowrap;
+	position: relative;
+}
+
+#axisContent td span{
+	font-size: 16px;
+	font-weight: bold;
+	text-align: right;
+}
+
+.unit-row{
+	position: absolute;
+	bottom: -25px;
+	left: -8px;
+}
+
+.unit-col{
+	position: absolute;
+	bottom: -10px;
+	left: -25px;
+}
+
+.unit-col-top{
+	position: absolute;
+	left: -25px;
+	top: -10px;
+}
+
+.unit-row-top{
+	position: absolute;
+	bottom: -25px;
+	right: -8px;
+}
+
+.unit-memo{
+	position: absolute;
+	bottom: -25px;
+	right: -105px;
+	font-size: 16px;
+	font-weight: bold;
+}
+
+.cursor {
+	/*display: none;*/
+	position: absolute;
+	display: block;
+	height: 15px;
+	width: 15px;
+	border: 1px solid #8BC34A;
+	border-radius: 8px;
+	background-color: #FF9800;
+	cursor: pointer;
+}
+
+.button-bar button {
+	margin-left: 15px;
+	margin-top: 10px;
+}

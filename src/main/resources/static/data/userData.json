@@ -1,0 +1,53 @@
+{
+	"code": 0,
+	"page": {
+		"totalCount": 6,
+		"pageSize": 6,
+		"totalPage": 1,
+		"currPage": 1,
+		"list": [
+			{
+				"id": 1,
+				"code": "ygbh000038",
+				"name":"胡建",
+				"upost": "总经理",
+				"phone": "13790297389"
+			},
+			{
+				"id": 2,
+				"code": "ygbh000048",
+				"name":"张燕",
+				"upost": "资料员",
+				"phone": "18703921940"
+			},
+			{
+				"id": 3,
+				"code": "ygbh000049",
+				"name":"张鑫",
+				"upost": "项目经理",
+				"phone": "15209382390"
+			},
+			{
+				"id": 4,
+				"code": "ygbh000050",
+				"name":"张晓东",
+				"upost": "预算员",
+				"phone": "15123809397"
+			},
+			{
+				"id": 5,
+				"code": "ygbh000052",
+				"name":"邵严冬",
+				"upost": "码农",
+				"phone": "15895333669"
+			},
+			{
+				"id": 6,
+				"code": "ygbh000054",
+				"name":"周琳",
+				"upost": "行政专员",
+				"phone": "13790297389"
+			}
+		]
+	}
+}

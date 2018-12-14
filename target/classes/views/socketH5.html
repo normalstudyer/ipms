@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My WebSocket</title>
+</head>
+<body>
+Welcome<br/>
+<input id="text" type="text" /><button onclick="send()">Send</button>    <button onclick="closeWebSocket()">Close</button><button onclick="clearData()">清空</button>
+<div id="message">
+</div>
+</body>
+<script src="libs/jquery.min.js"></script>
+<script>
+    var ws = null;
+    var lockReconnect = false;//避免重复连接
+    var IP_CONFIG = (window.location.protocol ? (window.location.protocol + "//") : "") + window.location.host;
+    IP_CONFIG=IP_CONFIG.replace("http","ws");
+    var wsUrl=IP_CONFIG+"/mifu-ips/websocket";
+    //判断当前浏览器是否支持WebSocket
+    if('WebSocket' in window){
+        //websocket = new WebSocket(IP_CONFIG+"/mifu-ips/websocket");
+        createWebSocket(wsUrl);
+    }
+    else{
+        alert('Not support websocket');
+    }
+    
+    function clearData() {
+        $("#message").empty();
+    }
+
+    function createWebSocket(url) {
+        try {
+            ws = new WebSocket(url);
+            initEventHandle();
+        } catch (e) {
+            reconnect(url);
+        }
+    }
+
+    function initEventHandle() {
+        ws.onclose = function () {
+            reconnect(wsUrl);
+        };
+        ws.onerror = function () {
+            reconnect(wsUrl);
+        };
+        ws.onopen = function () {
+            //心跳检测重置
+            heartCheck.reset().start();
+        };
+        ws.onmessage = function (event) {
+            //如果获取到消息，心跳检测重置
+            //拿到任何消息都说明当前连接是正常的
+            heartCheck.reset().start();
+            $("#message").append(event.data);
+            // setMessageInnerHTML(event.data);
+        };
+        window.onbeforeunload = function(){
+            ws.close();
+        }
+    }
+
+    function reconnect(url) {
+        if(lockReconnect) return;
+        lockReconnect = true;
+        //没连接上会一直重连，设置延迟避免请求过多
+        setTimeout(function () {
+            createWebSocket(url);
+            lockReconnect = false;
+        }, 2000);
+    }
+
+
+    //心跳检测
+    var heartCheck = {
+        timeout: 10000,//10秒
+        timeoutObj: null,
+        reset: function(){
+            clearTimeout(this.timeoutObj);
+            return this;
+        },
+        start: function(){
+            this.timeoutObj = setTimeout(function(){
+                //这里发送一个心跳，后端收到后，返回一个心跳消息，
+                //onmessage拿到返回的心跳就说明连接正常
+                ws.send("HeartBeat");
+            }, this.timeout)
+        }
+    }
+</script>
+</html>

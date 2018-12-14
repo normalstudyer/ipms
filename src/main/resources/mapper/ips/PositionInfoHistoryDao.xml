@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jsfztech.modules.ips.dao.PositionInfoHistoryDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.jsfztech.modules.ips.entity.PositionInfoHistoryEntity" id="positionInfoHistoryMap">
+        <result property="id" column="id"/>
+        <result property="sourceName" column="source_name"/>
+        <result property="formatType" column="format_type"/>
+        <result property="tagId" column="tag_id"/>
+        <result property="tagIdFormat" column="tag_id_format"/>
+        <result property="x" column="x"/>
+        <result property="y" column="y"/>
+        <result property="z" column="z"/>
+        <result property="battery" column="battery"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="blinkId" column="blink_id"/>
+        <result property="qualityIndicator" column="quality_indicator"/>
+        <result property="payload" column="payload"/>
+        <result property="msg" column="msg"/>
+    </resultMap>
+
+	<resultMap type="java.util.Map" id="positionInfoHistoryMap1">
+		<result property="tagId" column="tag_id"/>
+		<result property="name" column="name"/>
+		<result property="battery" column="battery"/>
+		<result property="x" column="x"/>
+		<result property="y" column="y"/>
+		<!--<result property="z" column="z"/>-->
+
+		<result property="updateDate" column="update_date"/>
+
+	</resultMap>
+
+	<select id="queryObject" resultType="com.jsfztech.modules.ips.entity.PositionInfoHistoryEntity">
+		select * from ips_position_info_history where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.jsfztech.modules.ips.entity.PositionInfoHistoryEntity">
+		select * from ips_position_info_history
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryExportList" resultMap="positionInfoHistoryMap1">
+		SELECT
+		ih.tag_id,
+		ip.`name`,
+		ih.battery,
+		ih.x,
+		ih.y,
+
+		ih.update_date
+		FROM
+		ips_position_info_history ih
+		LEFT JOIN ips_persons ip ON ih.tag_id = ip.label_id where 1=1
+		<if test="stime != null and stime.trim() != ''">
+			and ih.`update_date` &gt;= str_to_date(#{stime},"%Y-%m-%d %H:%i:%s")
+		</if>
+		<if test="etime != null and etime.trim() != ''">
+			and ih.`update_date` &lt;  str_to_date(#{etime},"%Y-%m-%d %H:%i:%s")
+		</if>
+		<if test="tagId != null and tagId.trim() != ''">
+			and ih.`tag_id` = #{tagId}
+		</if>
+		<!--<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>-->
+
+	</select>
+
+	<select id="queryByTagId" resultType="com.jsfztech.modules.ips.entity.PositionInfoHistoryEntity">
+		select * from ips_position_info_history where tag_id=#{tagId} and update_date>=#{sTime} and #{eTime}>=update_date
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from ips_position_info_history 
+	</select>
+	 
+	<insert id="save" parameterType="com.jsfztech.modules.ips.entity.PositionInfoHistoryEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into ips_position_info_history
+		(
+			`source_name`, 
+			`format_type`, 
+			`tag_id`, 
+			`tag_id_format`, 
+			`x`, 
+			`y`, 
+			`z`, 
+			`battery`, 
+			`update_date`, 
+			`blink_id`, 
+			`quality_indicator`, 
+			`payload`, 
+			`msg`
+		)
+		values
+		(
+			#{sourceName}, 
+			#{formatType}, 
+			#{tagId}, 
+			#{tagIdFormat}, 
+			#{x}, 
+			#{y}, 
+			#{z}, 
+			#{battery}, 
+			#{updateDate}, 
+			#{blinkId}, 
+			#{qualityIndicator}, 
+			#{payload}, 
+			#{msg}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.jsfztech.modules.ips.entity.PositionInfoHistoryEntity">
+		update ips_position_info_history 
+		<set>
+			<if test="sourceName != null">`source_name` = #{sourceName}, </if>
+			<if test="formatType != null">`format_type` = #{formatType}, </if>
+			<if test="tagId != null">`tag_id` = #{tagId}, </if>
+			<if test="tagIdFormat != null">`tag_id_format` = #{tagIdFormat}, </if>
+			<if test="x != null">`x` = #{x}, </if>
+			<if test="y != null">`y` = #{y}, </if>
+			<if test="z != null">`z` = #{z}, </if>
+			<if test="battery != null">`battery` = #{battery}, </if>
+			<if test="updateDate != null">`update_date` = #{updateDate}, </if>
+			<if test="blinkId != null">`blink_id` = #{blinkId}, </if>
+			<if test="qualityIndicator != null">`quality_indicator` = #{qualityIndicator}, </if>
+			<if test="payload != null">`payload` = #{payload}, </if>
+			<if test="msg != null">`msg` = #{msg}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from ips_position_info_history where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from ips_position_info_history where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

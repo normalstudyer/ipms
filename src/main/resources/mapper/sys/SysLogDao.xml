@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jsfztech.modules.sys.dao.SysLogDao">
+	<!-- 可根据自己的需求，是否要使用 -->
+	<resultMap type="java.util.Map"  id="syslogMap">
+		<result property="id" column="id"/>
+		<result property="username" column="username"/>
+		<result property="operation" column="operation"/>
+		<result property="method" column="method"/>
+		<result property="params" column="params"/>
+		<result property="time" column="time"/>
+		<result property="ip" column="ip"/>
+		<result property="createDate" column="create_date"/>
+
+	</resultMap>
+	<select id="queryObject" resultType="com.jsfztech.modules.sys.entity.SysLogEntity">
+		select * from sys_log where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.jsfztech.modules.sys.entity.SysLogEntity">
+		select * from sys_log 
+		<where>
+			<if test="key != null and key.trim() != ''">
+				`username` like concat('%',#{key},'%') or `operation` like concat('%',#{key},'%')
+			</if>
+			<if test="timestart != null and timestart.trim() != ''">
+				and `create_date` &gt;= str_to_date(#{timestart},"%Y-%m-%d %H:%i:%s")
+			</if>
+			<if test="timeend != null and timeend.trim() != ''">
+				and `create_date` &lt;  str_to_date(#{timeend},"%Y-%m-%d %H:%i:%s")
+			</if>
+		</where>
+		order by id desc 
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryExportList" resultMap="syslogMap">
+		select * from sys_log
+		<where>
+			<if test="key != null and key != 'null' and key.trim() != ''">
+				`username` like concat('%',#{key},'%') or `operation` like concat('%',#{key},'%')
+			</if>
+			<if test="timestart != null and timestart.trim() != ''">
+				and `create_date` &gt;= str_to_date(#{timestart},"%Y-%m-%d %H:%i:%s")
+			</if>
+			<if test="timeend != null and timeend.trim() != ''">
+				and `create_date` &lt;  str_to_date(#{timeend},"%Y-%m-%d %H:%i:%s")
+			</if>
+		</where>
+		order by id desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from sys_log 
+		<where>
+			<if test="key != null and key.trim() != ''">
+				`username` like concat('%',#{key},'%') or `operation` like concat('%',#{key},'%')
+			</if>
+			<if test="timestart != null and timestart.trim() != ''">
+				and `create_date` &gt;= str_to_date(#{timestart},"%Y-%m-%d %H:%i:%s")
+			</if>
+			<if test="timeend != null and timeend.trim() != ''">
+				and `create_date` &lt;  str_to_date(#{timeend},"%Y-%m-%d %H:%i:%s")
+			</if>
+		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.jsfztech.modules.sys.entity.SysLogEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into sys_log
+		(
+			`username`, 
+			`operation`, 
+			`method`, 
+			`params`,
+			`time`,
+			`ip`, 
+			`create_date`
+		)
+		values
+		(
+			#{username}, 
+			#{operation}, 
+			#{method}, 
+			#{params}, 
+			#{time},
+			#{ip},
+			#{createDate}
+		)
+	</insert>
+	
+	<delete id="delete">
+		delete from sys_log where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from sys_log where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

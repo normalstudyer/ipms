@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jsfztech.modules.ips.dao.PersonsDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.jsfztech.modules.ips.entity.PersonsEntity" id="personsMap">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="sex" column="sex"/>
+        <result property="nation" column="nation"/>
+        <result property="birth" column="birth"/>
+        <result property="job" column="job"/>
+        <result property="employeeNumber" column="employee_number"/>
+        <result property="phone" column="phone"/>
+        <result property="address" column="address"/>
+        <result property="labelId" column="label_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="photoUrl" column="photo_url"/>
+        <result property="isdel" column="isdel"/>
+		<result property="deptName" column="deptName"/>
+		<collection property="rail"  javaType="ArrayList"
+					ofType="com.jsfztech.modules.ips.entity.RailPersonRelEntity">
+			<result property="id" column="railpid"/>
+			<result property="railId" column="rail_id"/>
+			<!--<result property="personId" column="person_id"/>-->
+			<result property="enter" column="enter"/>
+			<result property="leave" column="leave"/>
+			<result property="railName" column="railName"/>
+
+		</collection>
+	</resultMap>
+	<!-- 可根据自己的需求，是否要使用 -->
+	<resultMap type="java.util.Map"  id="personsHashMap">
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="sex" column="sex"/>
+		<result property="nation" column="nation"/>
+		<result property="birth" column="birth"/>
+		<result property="job" column="job"/>
+		<result property="employeeNumber" column="employee_number"/>
+		<result property="phone" column="phone"/>
+		<result property="address" column="address"/>
+		<result property="labelId" column="label_id"/>
+		<result property="deptId" column="dept_id"/>
+		<result property="photoUrl" column="photo_url"/>
+		<result property="isdel" column="isdel"/>
+		<result property="deptName" column="deptName"/>
+		<collection property="rail"  javaType="ArrayList"
+					ofType="com.jsfztech.modules.ips.entity.RailPersonRelEntity">
+			<result property="id" column="railpid"/>
+			<result property="railId" column="rail_id"/>
+			<!--<result property="personId" column="person_id"/>-->
+			<result property="enter" column="enter"/>
+			<result property="leave" column="leave"/>
+			<result property="railName" column="railName"/>
+
+		</collection>
+	</resultMap>
+<!-- ip.*,irpr.id as railpersonid ,irpr.enter,irpr.leave,irpr.rail_id as  railId-->
+	<select id="queryObject" resultType="com.jsfztech.modules.ips.entity.PersonsEntity"  resultMap="personsMap">
+		select ip.*,irpr.id as railpid ,irpr.enter,irpr.leave,irpr.rail_id ,ipr.rail_name as railName   from ips_persons ip left JOIN ips_rail_person_rel irpr on irpr.person_id=ip.id
+		 left JOIN ips_position_rail ipr on irpr.rail_id=ipr.id  where ip.id = #{value}
+	</select>
+
+	<select id="queryList" resultMap="personsHashMap">
+		select ips_persons.*,sys_dept.name as  deptName from ips_persons  LEFT JOIN sys_dept ON sys_dept.dept_id=ips_persons.dept_id  WHERE  1=1
+		<if test="deptId != null and deptId != 1"> and  ips_persons.dept_id  in  ( SELECT  dept_id   from sys_dept  WHERE  (dept_id= #{deptId} or parent_id= #{deptId})) </if>
+		<if test="job != null and job != ''"> and  ips_persons.job  LIKE   concat('%', #{job}, '%') </if>
+		<if test="name != null and name != ''"> and  ips_persons.name  LIKE   concat('%', #{name}, '%') </if>
+		<if test="employeeNumber != null and employeeNumber != ''"> and  ips_persons.employee_number  LIKE   concat('%', #{employeeNumber}, '%')  </if>
+		<choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	<select id="queryExport" resultMap="personsHashMap">
+		select ips_persons.*,sys_dept.name as  deptName from ips_persons  LEFT JOIN sys_dept ON sys_dept.dept_id=ips_persons.dept_id  WHERE  1=1
+		<if test="deptId != null and deptId != ''"> and  ips_persons.dept_id  in  ( SELECT  dept_id   from sys_dept  WHERE  (dept_id= #{deptId} or parent_id= #{deptId})) </if>
+		<if test="job != null and job != ''"> and  ips_persons.job  LIKE   concat('%', #{job}, '%') </if>
+		<if test="name != null and name != ''"> and  ips_persons.name  LIKE   concat('%', #{name}, '%') </if>
+		<if test="employeeNumber != null and employeeNumber != ''"> and  ips_persons.employee_number  LIKE   concat('%', #{employeeNumber}, '%')  </if>
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+	</select>
+
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from ips_persons 
+	</select>
+	 
+	<insert id="save" parameterType="com.jsfztech.modules.ips.entity.PersonsEntity" useGeneratedKeys="true" keyProperty="id"  >
+		insert into ips_persons
+		(
+			`name`, 
+			`sex`, 
+			`nation`, 
+			`birth`, 
+			`job`, 
+			`employee_number`, 
+			`phone`, 
+			`address`, 
+			`label_id`, 
+			`dept_id`, 
+			`photo_url`, 
+			`isdel`
+		)
+		values
+		(
+			#{name}, 
+			#{sex}, 
+			#{nation}, 
+			#{birth}, 
+			#{job}, 
+			#{employeeNumber}, 
+			#{phone}, 
+			#{address}, 
+			#{labelId}, 
+			#{deptId}, 
+			#{photoUrl}, 
+			0
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.jsfztech.modules.ips.entity.PersonsEntity">
+		update ips_persons 
+		<set>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="sex != null">`sex` = #{sex}, </if>
+			<if test="nation != null">`nation` = #{nation}, </if>
+			<if test="birth != null">`birth` = #{birth}, </if>
+			<if test="job != null">`job` = #{job}, </if>
+			<if test="employeeNumber != null">`employee_number` = #{employeeNumber}, </if>
+			<if test="phone != null">`phone` = #{phone}, </if>
+			<if test="address != null">`address` = #{address}, </if>
+			<if test="labelId != null">`label_id` = #{labelId}, </if>
+			<if test="deptId != null">`dept_id` = #{deptId}, </if>
+			<if test="photoUrl != null">`photo_url` = #{photoUrl}, </if>
+			<if test="isdel != null">`isdel` = #{isdel}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from ips_persons where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from ips_persons where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	<select id="queryPersonTreeList" resultType="java.util.Map">
+		SELECT dept_id AS id,parent_id AS pid,`name`,0 AS nodetype,"" as label_id FROM `sys_dept` WHERE del_flag=0
+		 UNION ALL
+		SELECT CONCAT("p",id) AS id ,dept_id AS pid,`name`,1 AS nodetype,label_id FROM ips_persons  WHERE isdel=0;
+	</select>
+
+</mapper>

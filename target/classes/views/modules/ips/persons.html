@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>人员表</title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+	<link rel="stylesheet" href="../../css/bootstrap.min.css">
+	<link rel="stylesheet" href="../../css/font-awesome.min.css">
+	<link rel="stylesheet" href="../../plugins/jqgrid/ui.jqgrid-bootstrap.css">
+	<link rel="stylesheet" href="../../plugins/ztree/css/metroStyle/metroStyle.css">
+	<link rel="stylesheet" href="../../css/bootstrap-table.min.css">
+	<link rel="stylesheet" href="../../css/main.css">
+	<link rel="stylesheet" href="../../plugins/treegrid/jquery.treegrid.css">
+	<link rel="stylesheet" href="../../plugins/layui/layui/css/layui.css">
+
+	<script src="../../libs/jquery.min.js"></script>
+	<script src="../../plugins/layer/layer.js"></script>
+	<script src="../../libs/bootstrap.min.js"></script>
+	<script src="../../libs/vue.min.js"></script>
+	<script src="../../libs/bootstrap-table.min.js"></script>
+	<script src="../../plugins/treegrid/jquery.treegrid.min.js"></script>
+	<script src="../../plugins/treegrid/jquery.treegrid.bootstrap3.js"></script>
+	<script src="../../plugins/treegrid/jquery.treegrid.extension.js"></script>
+	<script src="../../plugins/treegrid/tree.table.js"></script>
+	<script src="../../plugins/jqgrid/grid.locale-cn.js"></script>
+	<script src="../../plugins/jqgrid/jquery.jqGrid.min.js"></script>
+	<script src="../../plugins/ztree/jquery.ztree.all.min.js"></script>
+	<script src="../../js/common.js"></script>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<div class="form-inline search-blocks">
+			<div class="form-group form-group-sm">
+				<label>工号：</label>
+				<input type="text" class="form-control" v-model="q.employeeNumber" @keyup.enter="query" placeholder="工号">
+			</div>
+			<div class="form-group form-group-sm">
+				<label>姓名：</label>
+				<input type="text" class="form-control" v-model="q.name" @keyup.enter="query" placeholder="职员姓名">
+			</div>
+			<div class="form-group form-group-sm">
+				<label>职位：</label>
+				<input type="text" class="form-control" v-model="q.job" @keyup.enter="query" placeholder="职位名称">
+			</div>
+			<a class="btn btn-default btn-sm" @click="query">查询</a>
+		</div>
+		<div class="grid-btn button-blocks">
+			<a v-if="hasPermission('ips:persons:save')" class="btn btn-primary btn-sm" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			<a v-if="hasPermission('ips:persons:update')" class="btn btn-primary btn-sm" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+			<a v-if="hasPermission('ips:persons:delete')" class="btn btn-primary btn-sm" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+			<a v-if="hasPermission('ips:positionlabel:export')" class="btn btn-primary btn-sm" @click="exportpersion" ><i class="glyphicon glyphicon-download-alt"></i>&nbsp;导出</a>
+		</div>
+		<div class="row">
+			<div class="col-md-2">
+				<ul id="deptTree" class="ztree"></ul>
+			</div>
+			<div class="col-md-10">
+				<table id="jqGrid"></table>
+				<div id="jqGridPager"></div>
+			</div>
+		</div>
+
+    </div>
+
+    <div v-show="!showList" class="panel panel-default ">
+		<div class="panel-heading">{{title}}</div>
+		<form class="form-horizontal col-sm-10" >
+											<div class="form-group">
+			   	<div class="col-sm-2 control-label">姓名</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control form-control-tiankong" v-model="persons.name" placeholder="姓名"/>
+
+				</div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">性别
+				</div>
+			   	<div class="col-sm-10">
+					<input type="radio"  name="sex" v-model="persons.sex"  value="0"  />男 &nbsp&nbsp&nbsp
+					<input type="radio"      name="sex" v-model="persons.sex"  value="1" />女
+				<!--	<input type="text" class="form-control" v-model="persons.sex" placeholder="0：男，1：女"/>-->
+			    </div>
+
+									</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">民族</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control form-control-tiankong" v-model="persons.nation" placeholder="民族"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">出生日期</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control form-control-tiankong" v-model="persons.birth" placeholder="出生日期"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">职位</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control form-control-tiankong" v-model="persons.job" placeholder="职位"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">工号</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control form-control-tiankong" v-model="persons.employeeNumber" placeholder="工号"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">联系方式</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control form-control-tiankong" v-model="persons.phone" placeholder="联系方式"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">家庭住址</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control form-control-tiankong" v-model="persons.address" placeholder="家庭住址"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label" >标签编号</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control form-control-tiankong" v-model="persons.labelId"  id="labelIdinput" placeholder="标签编号" @click="selelabel" readonly="readonly" />
+					<input type="hidden"  v-model="persons.labelIdcopy"   />
+			      </div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-2 control-label" >电子围栏</div>
+				<div class="col-sm-10">
+					<input type="text" class="form-control form-control-tiankong" v-model="persons.rail" id="railinput"  placeholder="电子围栏" @click="selectrail" readonly="readonly" />
+					<input type="hidden"  v-model="persons.railcopy"   />
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-2 control-label">头像地址</div>
+				<div class="col-sm-2" style="padding-left: 0px;width:100px;" ><button type="button" class="layui-btn layui-btn-sm" id="selectPic">选择图片</button></div>
+				<div class="col-sm-6" style="padding-left: 0px;margin-left: -20px;">
+					<input type="text" style="width:290px;" class="form-control" id="picaddress" v-model="persons.photoUrl" placeholder="头像地址"/>
+				</div>
+			</div>
+
+
+							<div class="form-group">
+				<div class="col-sm-2 control-label"></div>
+				<input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+				&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+			</div>
+		</form>
+		<div style="float:left;width:300px;height:300px;border:1px solid #ccc;margin-top:20px;" >
+			<div class="col-sm-6 panel-heading">预览图片</div>
+			<div class="layui-upload-list"  style="height: 200px;">
+				<img class="layui-upload-img" id="test-upload-normal-img" style="height:100px;"  >
+				<p id="test-upload-demoText"></p>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+<link rel="stylesheet" href="../../css/persons.css">
+<script src="../../plugins/layui/layui/layui.js"></script>
+<script src="../../js/modules/ips/railWin.js"></script>
+<script src="../../js/modules/ips/labelWin.js"></script>
+<script src="../../js/modules/ips/recordWin.js"></script>
+<script src="../../js/modules/ips/persons.js"></script>
+
+
+</body>
+</html>

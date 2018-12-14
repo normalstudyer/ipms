@@ -1,0 +1,99 @@
+
+body {
+    /*margin: 10px;*/
+    overflow: hidden;
+}
+.ztree li span.button.iconuser_ico_docu{
+    margin-right:2px;
+    background: url(../images/ztree/user.png) no-repeat center center;
+    vertical-align:top;
+    *vertical-align:middle
+}
+.ztree li span.button.icontRailOff{
+    margin-right:2px;
+    background: url(../images/ztree/trail-off.png) no-repeat center center;
+    vertical-align:top;
+    *vertical-align:middle
+}
+.ztree li span.button.icontRailOn{
+    margin-right:2px;
+    background: url(../images/ztree/trail-on.png) no-repeat center center;
+    vertical-align:top;
+    *vertical-align:middle
+}
+.demoIcon{
+    padding: 0 2px 0 10px;
+}
+.treediv{
+    height: 65%;
+}
+
+.treediv .title{
+    /*color:#fff;*/
+    width:100%;
+    height: 35px;
+    /*background-color: #3c8dbc;*/
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    line-height: 35px;
+}
+
+.treediv .title span{
+    font-weight: bold;
+}
+.rail_log_div{
+    width:100%;
+    height:35%;
+    padding: 2px;
+    line-height: 35px;
+    /*background-color:#dddddd*/
+}
+.rail_log_div .title{
+    /*color:#fff;*/
+    width:100%;
+    height: 35px;
+    /*background-color: #3c8dbc;*/
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+
+.rail_log_div .title span{
+    font-weight: bold;
+}
+
+.rail_log_div .title a{
+    color: #333;
+    margin-right: 5px;
+}
+
+.rail_log_div .title a:hover{
+    color: #777;
+}
+.rail_log_div ul{
+    margin-top: 5px;
+    list-style: none;
+    padding: 2px;
+    font-size: 13px;
+    line-height: 22px;
+    /*height: 100%;*/
+    width: 100%;
+    /*border: 1px solid #ddd;*/
+    overflow-y: auto;
+}
+.rail_log_div .rail-danger{
+    color: red;
+    font-weight: 600;
+}
+
+.rail_log_div .rail-name{
+    /*color: #337ab7;*/
+    font-weight: 600;
+}
+.rail_log_div .log-time{
+    font-size: 12px;
+}
+
+.rail_log_div .nolog{
+    text-align: center;
+    color: #666;
+}

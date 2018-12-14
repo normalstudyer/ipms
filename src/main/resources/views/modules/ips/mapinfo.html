@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>地图表</title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/font-awesome.min.css">
+<link rel="stylesheet" href="../../plugins/jqgrid/ui.jqgrid-bootstrap.css">
+	<link rel="stylesheet" href="../../css/bootstrap-table.min.css">
+<link rel="stylesheet" href="../../plugins/ztree/css/metroStyle/metroStyle.css">
+<link rel="stylesheet" href="../../css/main.css">
+<link rel="stylesheet" href="../../plugins/layui/layui/css/layui.css">
+<script src="../../plugins/layui/layui/layui.js"></script>
+<script src="../../libs/jquery.min.js"></script>
+<script src="../../plugins/layer/layer.js"></script>
+<script src="../../libs/bootstrap.min.js"></script>
+<script src="../../libs/vue.min.js"></script>
+<script src="../../plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="../../plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script src="../../plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="../../js/common.js"></script>
+	<script src="../../plugins/treegrid/jquery.treegrid.min.js"></script>
+	<script src="../../plugins/treegrid/jquery.treegrid.bootstrap3.js"></script>
+	<script src="../../plugins/treegrid/jquery.treegrid.extension.js"></script>
+	<script src="../../plugins/treegrid/tree.table.js"></script>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<div class="form-inline search-blocks">
+			<div class="form-group form-group-sm">
+				<label>名称：</label>
+				<input type="text" class="form-control"  v-model="q.mapName" @keyup.enter="query" placeholder="地图名称">
+			</div>
+			<a class="btn btn-default btn-sm" @click="query">查询</a>
+
+		</div>
+		<div class="grid-btn button-blocks">
+			<a v-if="hasPermission('ips:mapinfo:save')" class="btn btn-primary btn-sm" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			<a v-if="hasPermission('ips:mapinfo:update')" class="btn btn-primary btn-sm" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+			<a v-if="hasPermission('ips:mapinfo:delete')" class="btn btn-primary btn-sm" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+		</div>
+		<div class="row">
+		  <div class="col-md-2">
+			<ul id="mapTree" class="ztree"></ul>
+		  </div>
+		  <div class="col-md-10">
+	        <table id="jqGrid"></table>
+	        <div id="jqGridPager"></div>
+		  </div>
+		</div>
+    </div>
+
+    <div v-show="!showList" class="panel panel-default">
+		<div class="panel-heading">{{title}}</div>
+		<form class="form-horizontal" style="float:left;">
+											<!--<div class="form-group">
+			   	<div class="col-sm-2 control-label">地图目录编号</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="mapInfo.catalogId" placeholder="地图目录编号"/>
+			    </div>
+			</div>-->
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">地图名称</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="mapInfo.mapName" placeholder="地图名称"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">地图图片地址</div>
+										<div class="col-sm-2" style="padding-left: 0px;width:100px;" ><button type="button" class="layui-btn layui-btn-sm" id="selectPic">选择图片</button></div>
+			   	<div class="col-sm-6" style="padding-left: 0px;margin-left: -20px;">
+			      <input type="text" style="width:290px;" class="form-control" id="picaddress" v-model="mapInfo.mapUrl" placeholder="地图图片地址"/>
+				</div>
+			</div>
+
+			                        <div class="form-group">
+				<div class="col-sm-2 control-label">地图描述</div>
+				<div class="col-sm-10">
+					<textarea class="form-control" v-model="mapInfo.mapMemo" placeholder="地图描述"></textarea>
+				</div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">原点坐标x</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="mapInfo.originX" value="0" placeholder="原点坐标x"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">原点坐标y</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="mapInfo.originY" value="0" placeholder="原点坐标y"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">区域长度(mm)</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="mapInfo.aeraLength" placeholder="区域长度(mm)"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">区域宽度(mm)</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="mapInfo.aeraWidth" placeholder="区域宽度(mm)"/>
+			    </div>
+			</div>
+									<!--<div class="form-group">-->
+			   	<!--<div class="col-sm-2 control-label">图片高度(px)</div>-->
+			   	<!--<div class="col-sm-10">-->
+			      <!--<input type="text" class="form-control" v-model="mapInfo.imageHeight" placeholder="图片高度(px)"/>-->
+			    <!--</div>-->
+			<!--</div>-->
+									<!--<div class="form-group">-->
+			   	<!--<div class="col-sm-2 control-label">图片宽度(px)</div>-->
+			   	<!--<div class="col-sm-10">-->
+			      <!--<input type="text" class="form-control" v-model="mapInfo.imageWidth" placeholder="图片宽度(px)"/>-->
+			    <!--</div>-->
+			<!--</div>-->
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">最大级别</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="mapInfo.zoomMax" placeholder="最大级别"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">最小级别</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="mapInfo.zoomMin" placeholder="最小级别"/>
+			    </div>
+			</div>
+									<!--<div class="form-group">-->
+			   	<!--<div class="col-sm-2 control-label">1：正常，0：已删除</div>-->
+			   	<!--<div class="col-sm-10">-->
+			      <!--<input type="text" class="form-control" v-model="mapInfo.isdel" placeholder="1：正常，0：已删除"/>-->
+			    <!--</div>-->
+			<!--</div>-->
+							<div class="form-group">
+				<div class="col-sm-2 control-label"></div> 
+				<input type="button" class="btn btn-primary" @click="saveOrUpdate" id="commit" value="确定"/>
+				&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+			</div>
+		</form>
+		<div style="float:left;width:300px;height:300px;border:1px solid #ccc;margin-top:20px;" >
+			<div class="col-sm-6 panel-heading">预览图片</div>
+			<div class="layui-upload-list"  style="height: 200px;">
+				<img class="layui-upload-img" id="test-upload-normal-img" style="height:100px;"  >
+				<div style="display:inline;"><p>身份证号码:</p><p id="test-upload-demoText"></p></div>
+			</div>
+		</div>
+	</div>
+
+</div>
+<!-- 选择地图 -->
+<!--<div id="mapLayer" style="display: block;padding:10px;">
+	<ul id="mapTree" class="ztree"></ul>
+</div>-->
+
+<link rel="stylesheet" href="../../css/persons.css">
+<script src="../../js/modules/ips/labelWin.js"></script>
+<script src="../../js/modules/ips/mapinfo.js"></script>
+</body>
+</html>

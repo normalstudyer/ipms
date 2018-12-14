@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jsfztech.modules.ips.dao.PositionInfoDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.jsfztech.modules.ips.entity.PositionInfoEntity" id="positionInfoMap">
+        <result property="id" column="id"/>
+        <result property="sourceName" column="source_name"/>
+        <result property="formatType" column="format_type"/>
+        <result property="tagId" column="tag_id"/>
+        <result property="tagIdFormat" column="tag_id_format"/>
+        <result property="x" column="x"/>
+        <result property="y" column="y"/>
+        <result property="z" column="z"/>
+        <result property="battery" column="battery"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="blinkId" column="blink_id"/>
+        <result property="qualityIndicator" column="quality_indicator"/>
+        <result property="payload" column="payload"/>
+        <result property="msg" column="msg"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.jsfztech.modules.ips.entity.PositionInfoEntity">
+		select * from ips_position_info where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.jsfztech.modules.ips.entity.PositionInfoEntity">
+		select * from ips_position_info
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from ips_position_info 
+	</select>
+	 
+	<insert id="save"  useGeneratedKeys="true" keyProperty="id">
+		delete from ${tablename} where tag_id = #{positionInfo.tagId};
+		insert into ${tablename}
+		(
+			`source_name`, 
+			`format_type`, 
+			`tag_id`, 
+			`tag_id_format`, 
+			`x`, 
+			`y`, 
+			`z`, 
+			`battery`, 
+			`update_date`,
+			`blink_id`, 
+			`quality_indicator`, 
+			`payload`, 
+			`msg`
+		)
+		values
+		(
+			#{positionInfo.sourceName},
+			#{positionInfo.formatType},
+			#{positionInfo.tagId},
+			#{positionInfo.tagIdFormat},
+			#{positionInfo.x},
+			#{positionInfo.y},
+			#{positionInfo.z},
+			#{positionInfo.battery},
+			#{positionInfo.updateDate},
+			#{positionInfo.blinkId},
+			#{positionInfo.qualityIndicator},
+			#{positionInfo.payload},
+			#{positionInfo.msg}
+		);
+		insert into ips_position_info_history
+		(
+			`source_name`,
+			`format_type`,
+			`tag_id`,
+			`tag_id_format`,
+			`x`,
+			`y`,
+			`z`,
+			`battery`,
+			`update_date`,
+			`blink_id`,
+			`quality_indicator`,
+			`payload`,
+			`msg`
+		)
+		values
+		(
+			#{positionInfo.sourceName},
+			#{positionInfo.formatType},
+			#{positionInfo.tagId},
+			#{positionInfo.tagIdFormat},
+			#{positionInfo.x},
+			#{positionInfo.y},
+			#{positionInfo.z},
+			#{positionInfo.battery},
+			#{positionInfo.updateDate},
+			#{positionInfo.blinkId},
+			#{positionInfo.qualityIndicator},
+			#{positionInfo.payload},
+			#{positionInfo.msg}
+		);
+	</insert>
+	 
+	<update id="update" parameterType="com.jsfztech.modules.ips.entity.PositionInfoEntity">
+		update ips_position_info 
+		<set>
+			<if test="sourceName != null">`source_name` = #{sourceName}, </if>
+			<if test="formatType != null">`format_type` = #{formatType}, </if>
+			<if test="tagId != null">`tag_id` = #{tagId}, </if>
+			<if test="tagIdFormat != null">`tag_id_format` = #{tagIdFormat}, </if>
+			<if test="x != null">`x` = #{x}, </if>
+			<if test="y != null">`y` = #{y}, </if>
+			<if test="z != null">`z` = #{z}, </if>
+			<if test="battery != null">`battery` = #{battery}, </if>
+			<if test="pushDate != null">`update_date` = #{updateDate}, </if>
+			<if test="blinkId != null">`blink_id` = #{blinkId}, </if>
+			<if test="qualityIndicator != null">`quality_indicator` = #{qualityIndicator}, </if>
+			<if test="payload != null">`payload` = #{payload}, </if>
+			<if test="msg != null">`msg` = #{msg}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from ips_position_info where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from ips_position_info where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<update id="queryTable" parameterType="String">
+
+		CREATE TABLE ${tablename} (
+  `id` bigint(22) NOT NULL AUTO_INCREMENT,
+  `source_name` varchar(100) DEFAULT NULL COMMENT '数据源名称',
+  `format_type` varchar(10) DEFAULT NULL COMMENT 'TP:上传 Tag 位置信息; TD:上传 Tag 自定义数据',
+  `tag_id` varchar(100) DEFAULT NULL COMMENT '二进制',
+  `tag_id_format` varchar(100) DEFAULT NULL COMMENT '二进制',
+  `x` double DEFAULT NULL COMMENT '坐标x',
+  `y` double DEFAULT NULL COMMENT '坐标y',
+  `z` double DEFAULT NULL COMMENT '坐标z',
+  `battery` varchar(20) DEFAULT NULL COMMENT '电量',
+  `update_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '推送日期',
+  `blink_id` int(11) DEFAULT NULL,
+  `quality_indicator` int(11) DEFAULT NULL,
+  `payload` varchar(20) DEFAULT NULL COMMENT '主基站ID',
+  `msg` varchar(100) DEFAULT NULL COMMENT '信息',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=97204 DEFAULT CHARSET=utf8 COMMENT='室内定位信息表';
+
+	</update>
+	<select id="queryY" parameterType="int">
+
+	</select>
+
+</mapper>
